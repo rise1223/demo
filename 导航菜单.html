@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS二级菜单示例</title>
+  <style>
+    /* 基本样式 */
+    nav {
+      width: 100%;
+      margin: 0 auto;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+      font-family: Arial, sans-serif;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      position: relative;
+    }
+
+    li {
+      float: left;
+      position: relative;
+    }
+
+    a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    /* 二级菜单样式 */
+    ul ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    ul li:hover > ul {
+      display: block;
+    }
+
+    ul ul li {
+      float: none;
+      border-bottom: 1px solid #eee;
+    }
+
+    ul ul li:last-child {
+      border-bottom: none;
+    }
+
+    /* 响应式布局 */
+    @media screen and (max-width: 600px) {
+      li {
+        float: none;
+        width: 100%;
+      }
+
+      ul ul {
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-shadow: none;
+        display: none;
+      }
+
+      ul li:hover > ul {
+        display: none;
+      }
+
+      ul li.active > ul {
+        display: block;
+      }
+
+      a {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <ul>
+      <li><a href="#">首页</a></li>
+      <li><a href="#">产品</a>
+        <ul>
+          <li><a href="#">产品1</a></li>
+          <li><a href="#">产品2</a></li>
+          <li><a href="#">产品3</a></li>
+        </ul>
+      </li>
+      <li><a href="#">关于我们</a></li>
+      <li><a href="#">联系我们</a></li>
+    </ul>
+  </nav>
+</body>
+
+</html>
