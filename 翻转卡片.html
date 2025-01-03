@@ -3,9 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>翻转卡片</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+
+    .card {
+      display: flex;
+      position: relative;
+      perspective: 500px;
+      cursor: pointer;
+      justify-content: center;
+    }
+
+    .card:hover .front{
+      transform: rotateY(-180deg);
+    }
+
+    .card:hover .back{
+      transform: rotateY(0);
+    }
+
+    .front,.back{
+      position:absolute;
+      border: 2px solid #999;
+      text-align: center;
+      width: 150px;
+      height: 220px;
+      border-radius: 15px;
+      box-shadow: 10px 10px 10px #999;
+      margin-top: 50px;
+      backface-visibility: hidden;
+      transition: all .5s ease-out;
+      /* transform-style: preserve-3d; */
+    }
+
+    .front{
+      background-color: bisque;
+    }
+
+    .back{
+      transform: rotateY(180deg);
+      background-color: aqua;
+    }
+  </style>
 </head>
 <body>
-  
+  <div class="card">
+    <div class="front">
+      <h2>正面</h2>
+      <p>这是正面内容。</p>
+    </div>
+    <div class="back">
+      <h2>背面</h2>
+      <p>这是背面内容。</p>
+    </div>
+  </div>
 </body>
 </html>
