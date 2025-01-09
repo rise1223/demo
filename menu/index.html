@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS二级菜单示例</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      /* font-size: 16px; */
+      box-sizing: border-box;
+    }
+    /* 基本样式 */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin: 0 auto;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+      font-family: Arial, sans-serif;
+    }
+
+    ul{
+      display: flex;
+      list-style: none;
+    }
+
+    li{
+      position: relative;
+    }
+
+    ul ul{
+      min-width: 120px;
+      position: absolute;
+      top: 50px;
+      display: none;
+      left: 50%;
+      background: #fff;
+      border: 1px solid #e4e7ed;
+      text-align: center;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+
+    .nav-info li,
+    .nav-profile li{
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+
+    .nav-info li:hover,
+    .sub-nav li:hover {
+      background: #9b9191;
+    }
+
+    .nav-info li:hover > a,
+    .sub-nav li:hover > a {
+      color: #fff;
+    }
+
+    li:hover > .sub-nav{
+      display: block;
+    }
+
+    a{
+      text-decoration: none;
+      color: #666;
+    }
+
+   li{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .nav-profile-icon{
+      width: 35px;
+      height: 35px;
+      margin-right: 10px;
+    }
+
+   .nav-profile-name{
+      font-size: 18px;
+    }
+
+    /* .nav-profile ul {
+      display: block;
+    } */
+  </style>
+</head>
+
+<body>
+  <nav>
+    <ul class="nav-info">
+      <li><a href="#">首页</a></li>
+      <li>
+        <a href="#">产品</a>
+        <ul class="sub-nav">
+          <li><a href="#">产品1</a></li>
+          <li><a href="#">产品2</a></li>
+          <li><a href="#">产品3</a></li>
+        </ul>
+      </li>
+      <li><a href="#">关于我们</a></li>
+      <li><a href="#">联系我们</a></li>
+    </ul>
+    <ul class="nav-profile">
+      <li>
+        <img class="nav-profile-icon" src="./icon-female.png" alt="用户头像">
+        <span class="nav-profile-name">Rise</span>
+        <ul class="sub-nav">
+          <li><a href="#">个人中心</a></li>
+          <li><a href="#">布局设置</a></li>
+          <li><a href="#">退出登录</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</body>
+
+</html>
