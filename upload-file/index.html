@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大文件上传</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="container">
+    <form action="#" enctype="multipart/form-data">
+      <div class="upload">
+        <!-- webkitdirectory选择文件夹 -->
+        <input type="file" multiple name="attachment" id="attachment">
+        <div class="upload-div"></div>
+      </div>
+      <div class="preview">
+        <img alt="上传预览图片">
+        <ul class="preview-list"></ul>
+      </div>
+      <input class="submit" type="button" value="提交">
+  </form>
+  </div>
+  <script src="https://cdn.bootcdn.net/ajax/libs/spark-md5/3.0.2/spark-md5.min.js"></script>
+  <script src="./uploadjs/index.js"></script>
+</body>
+</html>
