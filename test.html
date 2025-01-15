@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File and Folder Upload</title>
+</head>
+<body>
+  <input type="file" id="fileInput" multiple />
+  <div id="fileList"></div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+
+    fileInput.addEventListener('change', async (event) => {
+      const items = event.target.files;
+      const allFiles = [];
+      for (const item of items) {
+        const entry = item.webkitGetAsEntry? item.webkitGetAsEntry() : null;
+        if (entry) {
+          if (entry.isFile) {
+            allFiles.push(item);
+          } else if (entry.isDirectory) {
+            const subFiles = await processFolder(entry);
+            allFiles.push(...subFiles);
+          }
+        } else {
+          // Fallback for browsers not supporting webkitGetAsEntry
+          allFiles.push(item);
+        }
+      }
+      displayFiles(allFiles);
+    });
+
+    async function processFolder(folder) {
+      const entries = [];
+      const dirReader = folder.createReader();
+      const subEntries = await new Promise((resolve, reject) => {
+        dirReader.readEntries(resolve, reject);
+      });
+      for (const entry of subEntries) {
+        if (entry.isFile) {
+          entries.push(entry);
+        } else if (entry.isDirectory) {
+          const subFiles = await processFolder(entry);
+          entries.push(...subFiles);
+        }
+      }
+      return entries.map(entry => entry.getAsFile());
+    }
+
+    function displayFiles(files) {
+      fileList.innerHTML = '';
+      for (const file of files) {
+        const fileItem = document.createElement('div');
+        fileItem.textContent = file.name;
+        fileList.appendChild(fileItem);
+      }
+    }
+  </script>
+</body>
+</html>
