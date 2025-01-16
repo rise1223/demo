@@ -92,8 +92,9 @@ function handleFiles(entry){
   entries.push(entry);
 }
 
-function readDirectoryEntries(dirReader) {
+function readDirectoryEntries(entry) {
   return new Promise((resolve, reject) => {
+    const dirReader = entry.createReader();
     dirReader.readEntries(resolve, reject);
   });
 }
@@ -101,31 +102,24 @@ function readDirectoryEntries(dirReader) {
 // 处理文件夹数据 
 const entries = [];
 async function handleDirectory(directoryEntry){
-  const dirReader = directoryEntry.createReader();
-
-  const promiseEntryArr = []
-  while(true){
-    const result = await readDirectoryEntries(dirReader)
-    if(!result.length){
-      break;
-    }
-    promiseEntryArr.push(...result);
-  }
+  const result = await readDirectoryEntries(directoryEntry)
   
-  await Promise.all(promiseEntryArr.map(async subEntry =>{
-      if(subEntry.isFile){
-        entries.push(subEntry);
-      } else if(subEntry.isDirectory){
-        await handleDirectory(subEntry);
-      }
-  }));
+  for (const subEntry of result) {
+    if(subEntry.isFile){
+      entries.push(subEntry);
+    }else if(subEntry.isDirectory){
+     await handleDirectory(subEntry);
+    }
+  }
+  // return entries;
 }
 
 // 解析拖拽文件
 async function parseItems(items){
   console.log('items.length', items.length);
-  // todo Promise.all并发处理能解决中间变量丢失问题
-  await Promise.all([...items].map(async (item,i) =>{
+  
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
     const entry = item.webkitGetAsEntry();
     console.log("item：",i,items.length,item,entry);
     if(entry.isFile){
@@ -134,26 +128,11 @@ async function parseItems(items){
       // entries.length = 0;
       await handleDirectory(entry);
     }
-  }))
-
-  // for (let i = 0; i < items.length; i++) {
-  //   const item = items[i];
-  //   const entry = item.webkitGetAsEntry();
-  //   console.log("item：",i,items.length,item,entry);
-  //   if(entry.isFile){
-  //     handleFiles(entry);
-  //   } else if(entry.isDirectory){
-  //     // entries.length = 0;
-  //     await handleDirectory(entry);
-  //   }
-  //   console.log('items22',items,items.length);
-  // }
-
-
-
+    console.log('items22',items,items.length);
+  }
   // const files = await fileEntryList2FileList(entries);
   // console.log('files：',files);
-  console.log('entries',entries);
+  // console.log('entries',entries);
 }
 
 // 处理拖拽文件

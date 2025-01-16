@@ -2,62 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>File and Folder Upload</title>
+  <title>Drag and Drop Folder Upload</title>
+  <style>
+    #drop-zone {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      width: 300px;
+      text-align: center;
+      margin: 50px auto;
+      transition: border-color 0.3s;
+    }
+    #drop-zone.dragover {
+      border-color: #666;
+    }
+    .file-list {
+      margin-top: 20px;
+      list-style-type: none;
+      padding: 0;
+    }
+    .file-list li {
+      background: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
-  <input type="file" id="fileInput" multiple />
-  <div id="fileList"></div>
+  <div id="drop-zone">Drop files or folders here...</div>
+  <ul id="file-list" class="file-list"></ul>
 
   <script>
-    const fileInput = document.getElementById('fileInput');
-    const fileList = document.getElementById('fileList');
+    document.addEventListener('DOMContentLoaded', () => {
+      const dropZone = document.getElementById('drop-zone');
+      const fileList = document.getElementById('file-list');
 
-    fileInput.addEventListener('change', async (event) => {
-      const items = event.target.files;
-      const allFiles = [];
-      for (const item of items) {
-        const entry = item.webkitGetAsEntry? item.webkitGetAsEntry() : null;
-        if (entry) {
-          if (entry.isFile) {
-            allFiles.push(item);
-          } else if (entry.isDirectory) {
-            const subFiles = await processFolder(entry);
-            allFiles.push(...subFiles);
-          }
-        } else {
-          // Fallback for browsers not supporting webkitGetAsEntry
-          allFiles.push(item);
-        }
-      }
-      displayFiles(allFiles);
-    });
-
-    async function processFolder(folder) {
-      const entries = [];
-      const dirReader = folder.createReader();
-      const subEntries = await new Promise((resolve, reject) => {
-        dirReader.readEntries(resolve, reject);
+      // 添加 dragover 事件监听器
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
       });
-      for (const entry of subEntries) {
-        if (entry.isFile) {
-          entries.push(entry);
-        } else if (entry.isDirectory) {
-          const subFiles = await processFolder(entry);
-          entries.push(...subFiles);
+
+      // 添加 dragleave 事件监听器
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      // 添加 drop 事件监听器
+      dropZone.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+
+        // 提取 dataTransfer 中的数据
+        const items = Array.from(e.dataTransfer.items);
+
+        // 清空之前的文件列表
+        fileList.innerHTML = '';
+
+        // 并发处理所有条目
+        await Promise.all(items.map(async (item) => {
+          if (item.kind === 'file') {
+            const entry = item.webkitGetAsEntry();
+
+            if (entry && entry.isDirectory) {
+              await handleDirectory(entry);
+            } else if (entry && entry.isFile) {
+              await handleFile(item.getAsFile());
+            }
+          }
+        }));
+      });
+
+      async function handleDirectory(directoryEntry) {
+        const dirReader = directoryEntry.createReader();
+        const entries = [];
+
+        // 递归读取目录中的所有文件和子目录
+        function readEntries() {
+          return new Promise((resolve) => {
+            dirReader.readEntries(resolve);
+          });
+        }
+
+        while (true) {
+          const batch = await readEntries();
+          console.log(batch.length);
+          
+          if (!batch.length) break;
+          entries.push(...batch);
+        }
+
+        // 并发处理所有条目
+      const res=  await Promise.all(entries.map(async (entry) => {
+          if (entry.isDirectory) {
+            await handleDirectory(entry);
+          } else if (entry.isFile) {
+            await new Promise((resolve, reject) => {
+              entry.file(async (file) => {
+                await handleFile(file);
+                resolve();
+              }, reject);
+            });
+          }
+        }));
+         console.log('resres',res);
+      }
+
+
+      async function handleFile(file) {
+        console.log('Processing file:', file.name);
+
+        // 添加文件名到文件列表
+        const listItem = document.createElement('li');
+        listItem.textContent = file.name;
+        fileList.appendChild(listItem);
+
+        // 这里可以添加上传逻辑，例如使用 fetch API 或 FormData
+        // 示例：上传文件到服务器
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            console.log('File uploaded successfully:', file.name);
+            listItem.style.color = 'green';
+            listItem.textContent += ' - Uploaded!';
+          } else {
+            console.error('Failed to upload file:', file.name);
+            listItem.style.color = 'red';
+            listItem.textContent += ' - Failed!';
+          }
+        } catch (error) {
+          console.error('Error uploading file:', error);
+          listItem.style.color = 'red';
+          listItem.textContent += ' - Error!';
         }
       }
-      return entries.map(entry => entry.getAsFile());
-    }
-
-    function displayFiles(files) {
-      fileList.innerHTML = '';
-      for (const file of files) {
-        const fileItem = document.createElement('div');
-        fileItem.textContent = file.name;
-        fileList.appendChild(fileItem);
-      }
-    }
+    });
   </script>
 </body>
 </html>
