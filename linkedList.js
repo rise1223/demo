@@ -65,26 +65,17 @@ class LinkedList {
     console.log(result);
   }
   // 反转链表
-  reverse(){
+  reverse () {
     let current = this.head;
     let previous = null;
-    let next =  this.head.next
-    while(next){
-      previous = current;
-      current = next;
-      next = next.next;
-      this.head = current
-
-      // console.log('previous：',previous);
-      // console.log('current',current);
-      // console.log('next',next);
-      // previous.next = null;
+    let next = null;
+    while (current) {
+      next = current.next;
       current.next = previous;
-      previous.next = null;
-    console.log("current",current);
-
+      previous = current
+      current = next
     }
-    
+    this.head = previous;
   }
 }
 
