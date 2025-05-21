@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>currify</title>
+</head>
+
+<body>
+  <script>
+    const currify = (fn) => (...args) => args.length >= fn.length ? fn.apply(null, args) : currify(fn.bind(null, ...args))
+
+    var num = 5
+    function add (a, b, c) {
+      const obj = {
+        d: 10,
+        get e () {
+          return this.d + 5
+        }
+      }
+      console.log('add：', this.num);
+
+      return a + b + c + this.num + obj.e
+    }
+
+    const curriedAdd = currify(add);
+
+    console.log('res：', curriedAdd(1)(2)(3)); // 输出6
+    console.log('res：', curriedAdd(1, 2)(3)); // 输出6
+    console.log('res：', curriedAdd(1)(2, 3)); // 输出6
+    console.log('res：', curriedAdd(1, 2, 3)); // 输出6
+    console.log(curriedAdd(1, 2, 3));
+  </script>
+</body>
+
+</html>

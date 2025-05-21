@@ -151,8 +151,8 @@ async function parseItems(items){
 
 
 
-  // const files = await fileEntryList2FileList(entries);
-  // console.log('files：',files);
+  const files = await fileEntryList2FileList(entries);
+  console.log('files：',files);
   console.log('entries',entries);
 }
 
