@@ -1,3 +1,4 @@
-      // console.log('previous：', previous);
-      // console.log('current：', current);
-      // console.log('next：', next);
+arr[1].then(res=>{
+//   console.log(res);
+  
+// })
