@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>web components</title>
+</head>
+
+<body>
+  <h2>web components</h2>
+  <my-component></my-component>
+  <my-button id="testButton">测试按钮</my-button>
+  <my-button id="changeButton">切换【测试按钮】状态</my-button>
+</body>
+<script src="./components/index.js"></script>
+<script>
+  const testButton = document.querySelector("#testButton")
+  // console.log(testButton);
+  // testButton.removeAttribute("disabled")
+
+  document.querySelector("#changeButton").addEventListener('click', () => {
+    const isTestButtonDisabled = testButton.hasAttribute('disabled')
+    console.log('changeButton__click', isTestButtonDisabled);
+    if (isTestButtonDisabled) {
+      testButton.removeAttribute("disabled")
+    } else {
+      testButton.setAttribute("disabled", "disabled")
+    }
+  })
+</script>
+
+</html>
