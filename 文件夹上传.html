@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文件夹上传</title>
+  <style>
+    #drag-box {
+      width: 300px;
+      height: 200px;
+      border: 2px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <input type="file" name="file" id="file" multiple webkitdirectory directory />
+  <div id="drag-box"></div>
+  <script>
+    const fileInput = document.getElementById('file');
+
+    // 监听文件输入的变化事件
+    fileInput.addEventListener('change', (event) => {
+      const files = event.target.files; // 获取选择的文件列表
+
+      // 遍历文件列表并输出文件信息
+      for (const file of files) {
+        console.log(`文件名: ${file.name}, 大小: ${file.size} bytes, 类型: ${file.type}`);
+      }
+    });
+
+    const dragBox = document.getElementById('drag-box');
+    // 监听拖拽事件
+    dragBox.addEventListener('dragover', (event) => {
+      event.preventDefault(); // 阻止默认行为以允许拖拽
+      dragBox.style.backgroundColor = 'lightblue'; // 可视化提示
+    });
+
+    dragBox.addEventListener('dragleave', (event) => {
+      event.preventDefault();
+      dragBox.style.backgroundColor = ''; // 恢复原始背景色
+    });
+
+    /**
+     *  递归读取文件夹中的文件
+     * */
+    const readFiles = async (entry) => {
+      if (entry.isDirectory) {
+        console.log(`目录: ${entry.name}`);
+        const directoryRender = entry.createReader();
+        const entries = await new Promise((resolve) => directoryRender.readEntries(resolve))
+        console.log('entries', entries);
+        let files = []
+        for (const entry of entries) {
+          const result = await readFiles(entry);
+          files.push(...result);
+          // console.log('result', result);
+          // files = files.concat(result);
+        }
+        return files;
+      } else {
+        const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
+        console.log('file', file);
+        return [file];
+
+      }
+    }
+
+    dragBox.addEventListener('drop', async (event) => {
+      event.preventDefault(); // 阻止默认行为
+      dragBox.style.backgroundColor = ''; // 恢复原始背景色
+
+      const files = event.dataTransfer.files; // 获取拖拽的文件列表
+
+      // 遍历文件列表并输出文件信息
+      for (const file of files) {
+        console.log(`文件名: ${file.name}, 大小: ${file.size} bytes, 类型: ${file.type}`);
+      }
+
+      const items = event.dataTransfer.items; // 获取拖拽的项列表
+      const promises = []
+      for (const item of items) {
+        const entry = item.webkitGetAsEntry(); // 获取文件系统条目
+        console.log('item', item);
+        console.log('entry', entry);
+        promises.push(readFiles(entry))
+      }
+      const fileList = await Promise.all(promises);
+      console.log('fileList', fileList.flat());
+    });
+  </script>
+</body>
+
+</html>
