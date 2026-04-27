@@ -5,7 +5,6 @@ type TTimerCallback = (...arg: any[]) => void;
  * 计算出实际已经过去的时间，然后动态调整下一次的延迟时间。
  * 这可以防止误差累积。
  */
-
 function createAccurateTimer(callback: TTimerCallback, interval: number) {
   let expected = performance.now() + interval;
   let timeoutId: number | null = null;
